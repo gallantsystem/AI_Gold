@@ -7,13 +7,20 @@
     
     <!-- PWA 설정 -->
     <meta name="theme-color" content="#f59e0b">
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./service-worker.js');
-    });
-  }
-</script>
+<link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2489/2489756.png">
+
+    <!-- 서비스 워커 등록 스크립트 (설치 팝업 활성화) -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          // 파일명을 service-worker.js로 통일합니다.
+          navigator.serviceWorker.register('/service-worker.js')
+            .then(reg => console.log('PWA 서비스 워커 등록 성공'))
+            .catch(err => console.log('PWA 등록 실패:', err));
+        });
+      }
+    </script>
     <!-- 외부 라이브러리 -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
