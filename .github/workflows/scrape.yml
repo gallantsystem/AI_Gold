@@ -17,7 +17,7 @@ jobs:
       - name: Install dependencies
         run: pip install requests beautifulsoup4
       - name: Run Scraper
-        run: python /scraper_to_json.py
+        run: python scraper_to_json.py
       - name: Commit and Push
         run: |
           git config --global user.name "github-actions[bot]"
