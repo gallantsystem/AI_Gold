@@ -11,9 +11,6 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="금 AI 분석">
     
-    <!-- Manifest (Inline for simplicity) -->
-    <link rel="manifest" href="data:application/json;base64,ewogICJnameIjogIuq4iCBBSSDrtoTshJ0iLAogICJzaG9ydF9uYW1lIjogIuq4iCBBSSIsCiAgInN0YXJ0X3VybCI6ICIuIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjZmZmZmZmIiwKICAidGhlbWVfY29sb3IiOiAiI2ZmZmZmZiIsCiAgInljb25zIjogWwogICAgewogICAgICAic3JjIjogImh0dHBzOi8vY2RuLWljb25zLXBuZy5mbGF0aWNvbi5jb20vNTEyLzI3MjEvMjcyMTI5MC5wbmciLAogICAgICAic2l6ZXMiOiAiNTEyeDUxMiIsCiAgICAgICJ0eXBlIjogImltYWdlL3BuZyIKICAgIH0KICBdCn0=">
-    
     <!-- Cropper.js CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
     
@@ -34,8 +31,6 @@
         .marquee-content { display: inline-block; animation: marquee 15s linear infinite; padding-left: 100%; }
         @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-200%); } }
         
-        .bottom-nav-item.active { color: #b8860b; font-weight: bold; }
-        
         .loading-spinner { border: 4px solid rgba(255,255,255,0.3); border-left-color: #fbbf24; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
         
@@ -47,41 +42,17 @@
 
         .preview-container { display: flex; justify-content: center; width: 100%; margin: 1rem 0; }
         .preview-square { width: 66.6%; aspect-ratio: 1/1; border-radius: 24px; overflow: hidden; background: #000; position: relative; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.15); }
-        .preview-square img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
+        .preview-square img { width: 100%; height: 100%; object-fit: cover; }
 
-        input::-webkit-outer-spin-button,
-        input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-
-        .crop-modal-content { width: 95%; max-width: 500px; padding: 0; }
         .crop-area { width: 100%; height: 350px; background: #000; }
         #crop-image { max-width: 100%; display: block; }
         
         main { flex: 1; overflow-y: auto; padding-bottom: 140px; }
-
-        select { appearance: none; -webkit-appearance: none; }
-
-        /* PWA Install Prompt Styling */
-        #pwa-prompt { display: none; }
-        #pwa-prompt.visible { display: flex; }
     </style>
 </head>
 <body>
 
-    <!-- PWA Install Prompt -->
-    <div id="pwa-prompt" class="fixed top-4 left-4 right-4 bg-gray-900 text-white p-4 rounded-2xl z-[60] flex items-center justify-between shadow-2xl animate-bounce">
-        <div class="flex items-center">
-            <div class="w-10 h-10 bg-yellow-400 rounded-lg flex items-center justify-center mr-3 text-gray-900">
-                <i class="fas fa-gold"></i>
-            </div>
-            <div>
-                <p class="text-xs font-bold">홈 화면에 추가</p>
-                <p class="text-[10px] text-gray-400">앱으로 빠르게 시세를 확인하세요</p>
-            </div>
-        </div>
-        <button id="pwa-install-btn" class="bg-blue-600 px-4 py-2 rounded-xl text-xs font-bold">설치</button>
-    </div>
-
-    <!-- Header & Top Marquee -->
+    <!-- Header -->
     <header class="bg-white sticky top-0 z-50 shadow-sm shrink-0">
         <div class="px-4 py-3 flex items-center justify-between gap-2">
             <h1 class="text-base font-black text-gray-900 shrink-0">금 AI 분석</h1>
@@ -92,25 +63,9 @@
                 금팔러가기 <i class="fas fa-chevron-right text-[9px] ml-0.5"></i>
             </a>
         </div>
-        <div class="bg-gray-800 py-1.5 overflow-hidden">
-            <div class="marquee"><div class="marquee-content text-[10px] text-yellow-200">[공지] AI 분석 수치는 참고용이며 실물 감정이 반드시 필요합니다.</div></div>
-        </div>
     </header>
 
     <main id="main-content" class="px-5 mt-4 space-y-6">
-        
-        <!-- Standard Price Card -->
-        <section id="price-section" class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
-            <div class="flex justify-between items-start mb-4">
-                <div>
-                    <h2 class="text-sm font-medium text-gray-500">오늘의 표준 시세</h2>
-                    <p class="text-xs text-gray-400 mt-1">국내 금 99.99% (1돈 기준)</p>
-                </div>
-                <div class="bg-yellow-50 p-2 rounded-xl"><i class="fas fa-chart-line text-yellow-600"></i></div>
-            </div>
-            <div id="gold-don-price" class="text-3xl font-black text-gray-900">로딩 중...</div>
-        </section>
-
         <!-- AI Analyzer Section -->
         <section id="ai-view" class="space-y-4">
             <div class="bg-white p-6 rounded-3xl shadow-sm border border-blue-50">
@@ -128,26 +83,14 @@
                     <div class="preview-container">
                         <div class="preview-square border-4 border-white">
                             <img id="main-preview-img" src="">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-3">
-                                <span class="text-white text-[10px] font-bold">분석 대상 사진</span>
-                            </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="space-y-4">
-                    <div class="relative bg-gray-50 p-4 rounded-2xl border-2 border-transparent focus-within:border-blue-500 transition-all">
-                        <div class="flex justify-between items-center mb-1">
-                            <label class="text-[10px] font-bold text-gray-400 uppercase">무게 입력</label>
-                            <div class="flex bg-gray-200 rounded-lg p-0.5">
-                                <button onclick="setUnit('don', 'ai')" id="ai-unit-don-btn" class="px-3 py-1 text-[10px] font-bold rounded-md transition-all bg-white text-blue-600 shadow-sm">돈</button>
-                                <button onclick="setUnit('gram', 'ai')" id="ai-unit-gram-btn" class="px-3 py-1 text-[10px] font-bold rounded-md transition-all text-gray-500">g</button>
-                            </div>
-                        </div>
-                        <div class="flex items-center">
-                            <input type="number" id="weight-input" value="1" step="0.01" class="bg-transparent border-0 w-full text-2xl font-black outline-none">
-                            <span id="ai-current-unit-label" class="text-lg font-bold text-gray-400 ml-2">돈</span>
-                        </div>
+                    <div class="bg-gray-50 p-4 rounded-2xl border-2 border-transparent focus-within:border-blue-500 transition-all">
+                        <label class="text-[10px] font-bold text-gray-400 uppercase">무게 입력 (돈)</label>
+                        <input type="number" id="weight-input" value="1" step="0.01" class="bg-transparent border-0 w-full text-2xl font-black outline-none">
                     </div>
 
                     <input type="file" id="image-input" accept="image/*" class="hidden">
@@ -158,147 +101,26 @@
                 </div>
             </div>
         </section>
-
-        <!-- Calculator View -->
-        <section id="calc-view" class="hidden space-y-6">
-            <div class="bg-white p-6 rounded-3xl shadow-sm space-y-5">
-                <div class="flex justify-between items-center">
-                    <h2 class="text-lg font-bold flex items-center">
-                        <span class="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center mr-2"><i class="fas fa-calculator text-yellow-600 text-sm"></i></span>
-                        금 정산 계산기
-                    </h2>
-                    <div class="flex bg-gray-100 rounded-lg p-0.5 scale-90">
-                        <button onclick="setUnit('don', 'calc')" id="calc-unit-don-btn" class="px-3 py-1 text-[10px] font-bold rounded-md transition-all bg-white text-yellow-600 shadow-sm">돈</button>
-                        <button onclick="setUnit('gram', 'calc')" id="calc-unit-gram-btn" class="px-3 py-1 text-[10px] font-bold rounded-md transition-all text-gray-500">g</button>
-                    </div>
-                </div>
-                <div class="space-y-4">
-                    <div class="bg-gray-50 p-4 rounded-2xl">
-                        <label class="text-[11px] font-bold text-gray-400">순금 (24K) 무게 (<span class="calc-unit-text">돈</span>)</label>
-                        <input type="number" id="calc-w-24" placeholder="0.00" class="bg-transparent border-0 w-full text-lg font-bold outline-none">
-                    </div>
-                    <div class="bg-gray-50 p-4 rounded-2xl">
-                        <label class="text-[11px] font-bold text-gray-400">18K 무게 (<span class="calc-unit-text">돈</span>)</label>
-                        <input type="number" id="calc-w-18" placeholder="0.00" class="bg-transparent border-0 w-full text-lg font-bold outline-none">
-                    </div>
-                    <div class="bg-gray-50 p-4 rounded-2xl">
-                        <label class="text-[11px] font-bold text-gray-400">14K 무게 (<span class="calc-unit-text">돈</span>)</label>
-                        <input type="number" id="calc-w-14" placeholder="0.00" class="bg-transparent border-0 w-full text-lg font-bold outline-none">
-                    </div>
-                    <button onclick="runCalculation()" class="w-full py-5 bg-yellow-500 text-white rounded-2xl font-black text-xl shadow-lg">계산하기</button>
-                </div>
-            </div>
-        </section>
-
-        <!-- Alarm View -->
-        <section id="alarm-view" class="hidden space-y-4">
-            <div class="bg-white p-6 rounded-3xl shadow-sm">
-                <h2 class="text-lg font-bold mb-5 flex items-center">
-                    <span class="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center mr-2"><i class="fas fa-bell text-red-500 text-sm"></i></span>
-                    시세 알람 설정
-                </h2>
-                <p class="text-xs text-gray-400 mb-6 text-center leading-relaxed">설정하신 시간에 오늘의 금 시세를<br>팝업으로 상세히 보여드립니다.</p>
-                
-                <div class="flex items-center justify-between space-x-2 mb-8">
-                    <div class="flex-1 bg-gray-50 rounded-2xl overflow-hidden relative border border-gray-100">
-                        <select id="alarm-ampm" class="w-full p-4 bg-transparent text-center font-bold outline-none relative z-10">
-                            <option value="AM">오전</option>
-                            <option value="PM" selected>오후</option>
-                        </select>
-                        <i class="fas fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-gray-400"></i>
-                    </div>
-                    <div class="flex-1 bg-gray-50 rounded-2xl overflow-hidden relative border border-gray-100">
-                        <select id="alarm-hour" class="w-full p-4 bg-transparent text-center font-bold outline-none relative z-10">
-                        </select>
-                        <i class="fas fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-gray-400"></i>
-                    </div>
-                    <span class="font-bold text-gray-300">:</span>
-                    <div class="flex-1 bg-gray-50 rounded-2xl overflow-hidden relative border border-gray-100">
-                        <select id="alarm-minute" class="w-full p-4 bg-transparent text-center font-bold outline-none relative z-10">
-                        </select>
-                        <i class="fas fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-gray-400"></i>
-                    </div>
-                </div>
-
-                <div id="alarm-status" class="hidden text-center mb-4 p-3 bg-red-50 text-red-600 rounded-xl text-xs font-bold">
-                    🔔 시세 알람이 예약되었습니다.
-                </div>
-
-                <button onclick="saveAlarm()" class="w-full py-4 bg-red-500 text-white rounded-2xl font-bold shadow-md active:scale-95 transition-transform">알람 저장</button>
-            </div>
-        </section>
-
     </main>
 
-    <!-- Bottom Marquee -->
-    <div class="fixed bottom-20 left-0 w-full bg-white border-t border-gray-100 py-2 overflow-hidden z-40">
-        <div class="marquee">
-            <div class="marquee-content text-[11px] text-gray-500 flex items-center space-x-8">
-                <span>🏢 [종로금거래소 화성점] 031-356-1077</span>
-                <span>💎 [한국표준금거래소] 최고가 매입 전문</span>
-                <span>🥇 [화성 금은방] 금·은·다이아몬드 고가 매수</span>
-                <span>📞 [상담] 24시간 실시간 카톡 상담 가능</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- Bottom Nav -->
-    <nav class="fixed bottom-0 left-0 w-full bg-white border-t flex justify-around items-center h-20 px-1 z-50">
-        <button onclick="switchView('ai')" id="nav-ai" class="bottom-nav-item flex flex-col items-center flex-1 active">
-            <i class="fas fa-microchip text-xl mb-1"></i><span class="text-[9px]">AI 분석</span>
-        </button>
-        <button onclick="switchView('calc')" id="nav-calc" class="bottom-nav-item flex flex-col items-center flex-1">
-            <i class="fas fa-calculator text-xl mb-1"></i><span class="text-[9px]">금계산기</span>
-        </button>
-        <button onclick="switchView('alarm')" id="nav-alarm" class="bottom-nav-item flex flex-col items-center flex-1">
-            <i class="fas fa-bell text-xl mb-1"></i><span class="text-[9px]">알람설정</span>
-        </button>
-        <a href="https://open.kakao.com/o/sDqGhjGb" target="_blank" class="bottom-nav-item flex flex-col items-center flex-1 text-yellow-600">
-            <i class="fas fa-comment text-xl mb-1"></i><span class="text-[9px]">카톡상담</span>
-        </a>
-        <a href="tel:031-356-1077" class="bottom-nav-item flex flex-col items-center flex-1 text-red-500">
-            <i class="fas fa-phone-alt text-xl mb-1"></i><span class="text-[9px]">전화상담</span>
-        </a>
-    </nav>
-
-    <!-- Modals -->
+    <!-- Error Modal (Reused Alert Modal) -->
     <div id="alert-modal" class="modal">
         <div class="modal-content text-center">
             <div class="py-4">
-                <div class="w-14 h-14 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-info-circle text-2xl"></i>
+                <div id="alert-icon-box" class="w-14 h-14 bg-red-50 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-exclamation-triangle text-2xl"></i>
                 </div>
-                <h3 id="alert-title" class="text-lg font-black text-gray-900 mb-2">안내</h3>
-                <p id="alert-message" class="text-sm text-gray-500 leading-relaxed px-4"></p>
+                <h3 id="alert-title" class="text-lg font-black text-gray-900 mb-2">분석 오류</h3>
+                <div id="alert-message-container" class="bg-gray-50 p-3 rounded-xl text-left">
+                    <p id="alert-message" class="text-xs text-gray-600 leading-relaxed font-mono whitespace-pre-wrap"></p>
+                </div>
+                <p class="text-[10px] text-gray-400 mt-3 italic">위 내용을 스크린샷하여 관리자에게 문의해주세요.</p>
             </div>
             <button onclick="document.getElementById('alert-modal').classList.remove('active')" class="w-full py-4 mt-4 bg-gray-900 text-white rounded-2xl font-bold">확인</button>
         </div>
     </div>
 
-    <div id="alarm-popup-modal" class="modal">
-        <div class="modal-content">
-            <div class="text-center p-2">
-                <div class="inline-block bg-red-100 text-red-600 text-[10px] font-bold px-3 py-1 rounded-full mb-2">알람: 오늘의 시세</div>
-                <h2 class="text-xl font-black text-gray-900 mb-1">오늘의 표준 시세 확인</h2>
-                <p id="popup-date" class="text-[11px] text-gray-400 mb-6">기준 시간 로딩 중...</p>
-                <div class="bg-gray-50 rounded-2xl p-4 mb-4 border border-gray-100">
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="text-xs font-bold text-gray-500">순금 (24K) / 1돈</span>
-                        <span id="popup-24k-price" class="text-lg font-black text-yellow-600">로딩 중...</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-xs font-bold text-gray-500">순금 (24K) / 1g</span>
-                        <span id="popup-1g-price" class="text-sm font-bold text-gray-700">로딩 중...</span>
-                    </div>
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <button onclick="document.getElementById('alarm-popup-modal').classList.remove('active')" class="py-4 bg-gray-100 text-gray-500 rounded-2xl font-bold text-sm">닫기</button>
-                    <a href="tel:031-356-1077" class="py-4 bg-red-500 text-white rounded-2xl font-bold text-sm text-center shadow-lg">상담하기</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
+    <!-- Result Modal -->
     <div id="result-modal" class="modal">
         <div class="modal-content">
             <div id="result-body"></div>
@@ -309,121 +131,42 @@
         </div>
     </div>
 
-    <div id="crop-modal" class="modal">
-        <div class="modal-content crop-modal-content">
-            <div class="p-4 bg-gray-900 text-white flex justify-between items-center">
-                <span class="text-sm font-bold">금 부위 선택 (크롭)</span>
-                <button onclick="closeCropModal()" class="text-gray-400"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="crop-area"><img id="crop-image" src=""></div>
-            <div class="p-4 bg-white">
-                <button onclick="applyCrop()" class="w-full py-4 bg-yellow-400 text-gray-900 font-black rounded-xl shadow-lg">이 부위로 분석</button>
-            </div>
-        </div>
-    </div>
-
+    <!-- Loading Modal -->
     <div id="ad-modal" class="modal">
         <div class="modal-content text-center">
             <div class="flex flex-col items-center py-8">
                 <div class="loading-spinner mb-6"></div>
                 <h3 class="text-lg font-black mb-2">AI 정밀 분석 중...</h3>
-                <p class="text-xs text-gray-400 mb-8">잠시만 기다려주시면 결과를 표시합니다.</p>
+                <p class="text-xs text-gray-400">잠시만 기다려주세요.</p>
             </div>
         </div>
     </div>
 
-    <!-- Scripts -->
-    <script src="config.js" onerror="console.warn('config.js 파일을 찾을 수 없습니다.')"></script>
+    <!-- Crop Modal -->
+    <div id="crop-modal" class="modal">
+        <div class="modal-content !max-w-[500px] !p-0">
+            <div class="p-4 bg-gray-900 text-white flex justify-between items-center">
+                <span class="text-sm font-bold">금 부위 선택</span>
+                <button onclick="closeCropModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="crop-area"><img id="crop-image" src=""></div>
+            <div class="p-4 bg-white">
+                <button onclick="applyCrop()" class="w-full py-4 bg-yellow-400 text-gray-900 font-black rounded-xl">이 부위로 분석</button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <script>
-        function showAlert(message, title = "안내") {
-            document.getElementById('alert-title').textContent = title;
-            document.getElementById('alert-message').textContent = message;
-            document.getElementById('alert-modal').classList.add('active');
-        }
-
-        const APP_CONFIG = {
-            getGeminiKey: () => (typeof CONFIG !== 'undefined' && CONFIG.GEMINI_API_KEY) ? CONFIG.GEMINI_API_KEY : "",
-            getServiceKey: () => (typeof CONFIG !== 'undefined' && CONFIG.PUBLIC_DATA_SERVICE_KEY) ? CONFIG.PUBLIC_DATA_SERVICE_KEY : "",
-            getKakaoKey: () => (typeof CONFIG !== 'undefined' && CONFIG.KAKAO_REST_API_KEY) ? CONFIG.KAKAO_REST_API_KEY : "818e95777719602330a66d03f5637257"
-        };
-
-        let goldPriceGram = 118500; 
-        let aiCurrentUnit = 'don';
-        let calcCurrentUnit = 'don';
+        const apiKey = ""; // API Key (Runtime injected)
         let fullImageBase64 = null;
         let cropper = null;
-        let savedAlarm = null;
+        let goldPriceGram = 115000;
 
-        async function updateCurrentLocation() {
-            const locationSpan = document.querySelector('#location-display span');
-            if (!navigator.geolocation) {
-                locationSpan.textContent = "위치 지원 불가";
-                return;
-            }
-            navigator.geolocation.getCurrentPosition(async (position) => {
-                const lat = position.coords.latitude;
-                const lng = position.coords.longitude;
-                const kakaoKey = APP_CONFIG.getKakaoKey();
-                if (!kakaoKey) return;
-                try {
-                    const response = await fetch(`https://dapi.kakao.com/v2/local/geo/coord2regioncode.json?x=${lng}&y=${lat}`, {
-                        headers: { 'Authorization': `KakaoAK ${kakaoKey}` }
-                    });
-                    const data = await response.json();
-                    if (data.documents && data.documents.length > 0) {
-                        const region = data.documents.find(d => d.region_type === 'H') || data.documents[0];
-                        locationSpan.textContent = `${region.region_1depth_name} ${region.region_2depth_name}`;
-                    }
-                } catch (e) { console.error(e); }
-            });
-        }
-
-        async function fetchPrice() {
-            const serviceKey = APP_CONFIG.getServiceKey();
-            if (!serviceKey) { updatePriceUI(); return; }
-            try {
-                const url = `https://apis.data.go.kr/1160100/service/GetGeneralProductInfoService/getGoldPriceInfo?serviceKey=${serviceKey}&resultType=json&numOfRows=1&itmsNm=%EA%B8%88%2099.99_1Kg`;
-                const response = await fetch(url);
-                const data = await response.json();
-                if (data.response?.body?.items?.item?.[0]?.clpr) {
-                    goldPriceGram = parseFloat(data.response.body.items.item[0].clpr);
-                }
-            } catch (e) { console.error(e); } finally { updatePriceUI(); }
-        }
-
-        function updatePriceUI() {
-            const donPriceStr = Math.floor(goldPriceGram * 3.75).toLocaleString();
-            const goldPriceEl = document.getElementById('gold-don-price');
-            if(goldPriceEl) goldPriceEl.innerHTML = `<span class="text-yellow-600 font-black">${donPriceStr}</span><span class="text-sm font-bold text-gray-400">원</span>`;
-            const p24 = document.getElementById('popup-24k-price');
-            const p1g = document.getElementById('popup-1g-price');
-            if(p24) p24.textContent = donPriceStr + "원";
-            if(p1g) p1g.textContent = goldPriceGram.toLocaleString() + "원";
-        }
-
-        function setUnit(unit, view) {
-            if (view === 'ai') {
-                if (aiCurrentUnit === unit) return;
-                aiCurrentUnit = unit;
-                const input = document.getElementById('weight-input');
-                const label = document.getElementById('ai-current-unit-label');
-                input.value = unit === 'don' ? (input.value / 3.75).toFixed(2) : (input.value * 3.75).toFixed(2);
-                document.getElementById('ai-unit-don-btn').className = unit === 'don' ? "px-3 py-1 text-[10px] font-bold rounded-md transition-all bg-white text-blue-600 shadow-sm" : "px-3 py-1 text-[10px] font-bold rounded-md transition-all text-gray-500";
-                document.getElementById('ai-unit-gram-btn').className = unit === 'gram' ? "px-3 py-1 text-[10px] font-bold rounded-md transition-all bg-white text-blue-600 shadow-sm" : "px-3 py-1 text-[10px] font-bold rounded-md transition-all text-gray-500";
-                label.textContent = unit === 'don' ? "돈" : "g";
-            } else if (view === 'calc') {
-                if (calcCurrentUnit === unit) return;
-                calcCurrentUnit = unit;
-                const ids = ['calc-w-24', 'calc-w-18', 'calc-w-14'];
-                ids.forEach(id => {
-                    const el = document.getElementById(id);
-                    if (el.value) el.value = unit === 'don' ? (el.value / 3.75).toFixed(2) : (el.value * 3.75).toFixed(2);
-                });
-                document.getElementById('calc-unit-don-btn').className = unit === 'don' ? "px-3 py-1 text-[10px] font-bold rounded-md transition-all bg-white text-yellow-600 shadow-sm" : "px-3 py-1 text-[10px] font-bold rounded-md transition-all text-gray-500";
-                document.getElementById('calc-unit-gram-btn').className = unit === 'gram' ? "px-3 py-1 text-[10px] font-bold rounded-md transition-all bg-white text-yellow-600 shadow-sm" : "px-3 py-1 text-[10px] font-bold rounded-md transition-all text-gray-500";
-                document.querySelectorAll('.calc-unit-text').forEach(l => l.textContent = unit === 'don' ? "돈" : "g");
-            }
+        function showError(msg, title = "분석 오류") {
+            document.getElementById('alert-title').textContent = title;
+            document.getElementById('alert-message').textContent = msg;
+            document.getElementById('alert-modal').classList.add('active');
         }
 
         const imageInput = document.getElementById('image-input');
@@ -432,12 +175,11 @@
             if (!file) return;
             const reader = new FileReader();
             reader.onload = (event) => {
-                fullImageBase64 = event.target.result;
                 document.getElementById('crop-image').src = event.target.result;
                 document.getElementById('crop-modal').classList.add('active');
                 if (cropper) cropper.destroy();
                 setTimeout(() => {
-                    cropper = new Cropper(document.getElementById('crop-image'), { viewMode: 1, aspectRatio: 1, autoCropArea: 0.8 });
+                    cropper = new Cropper(document.getElementById('crop-image'), { viewMode: 1, aspectRatio: 1 });
                 }, 100);
             };
             reader.readAsDataURL(file);
@@ -449,10 +191,11 @@
         }
 
         function applyCrop() {
-            const canvas = cropper.getCroppedCanvas({ width: 500, height: 500 });
-            document.getElementById('price-section').classList.add('hidden');
+            const canvas = cropper.getCroppedCanvas({ width: 512, height: 512 });
+            fullImageBase64 = canvas.toDataURL('image/jpeg');
             document.getElementById('image-display-area').classList.remove('hidden');
-            document.getElementById('main-preview-img').src = canvas.toDataURL('image/jpeg');
+            document.getElementById('main-preview-img').src = fullImageBase64;
+            
             const actionBtn = document.getElementById('main-action-btn');
             actionBtn.onclick = startAIAnalysis;
             actionBtn.innerHTML = `<i class="fas fa-brain"></i><span>AI 분석 시작하기</span>`;
@@ -461,34 +204,66 @@
         }
 
         async function startAIAnalysis() {
-            const apiKey = APP_CONFIG.getGeminiKey();
-            if (!apiKey) return showAlert("API 키가 설정되지 않았습니다.");
             const weight = parseFloat(document.getElementById('weight-input').value);
-            if (!weight || weight <= 0) return showAlert("무게를 입력해주세요.");
+            if (!weight || weight <= 0) return showError("무게를 정확히 입력해주세요.");
+            
             document.getElementById('ad-modal').classList.add('active');
-            const gramWeight = aiCurrentUnit === 'don' ? weight * 3.75 : weight;
+            
             const base64Data = fullImageBase64.split(',')[1];
-            const systemPrompt = `귀금속 감정 전문가. 금의 품위(Karat)를 정밀 분석. JSON format: { "karat": "24K"|"18K"|"14K"|"기타", "confidence": number, "reason": string, "factor": number }`;
+            const systemPrompt = `귀금속 감정 전문가. 금의 품위(24K, 18K, 14K 등)를 분석. 응답은 반드시 JSON 형식을 준수할 것. JSON: { "karat": "24K", "confidence": 0.95, "reason": "색상과 광택이 순금에 가깝습니다.", "factor": 1.0 }`;
+
             try {
+                // 1. API 키 확인
+                if (!apiKey) {
+                    throw new Error("환경 변수에 API Key가 설정되지 않았습니다. (Key is empty)");
+                }
+
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        contents: [{ parts: [{ text: `무게: ${gramWeight}g. 함량 분석 요망.` }, { inlineData: { mimeType: "image/jpeg", data: base64Data } }] }],
+                        contents: [{ 
+                            parts: [
+                                { text: `무게: ${weight}돈. 사진 속 금의 함량을 정밀 분석하라.` }, 
+                                { inlineData: { mimeType: "image/jpeg", data: base64Data } }
+                            ] 
+                        }],
                         systemInstruction: { parts: [{ text: systemPrompt }] },
                         generationConfig: { responseMimeType: "application/json" }
                     })
                 });
+
+                // 2. HTTP 응답 상태 확인
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    const errMsg = errorData.error?.message || response.statusText;
+                    throw new Error(`[HTTP ${response.status}] ${errMsg}\n\n도움말: API 키 유효성 또는 네트워크 상태를 확인하세요.`);
+                }
+
                 const data = await response.json();
-                const res = JSON.parse(data.candidates[0].content.parts[0].text);
-                const price = Math.floor(goldPriceGram * gramWeight * (res.factor || 0.5));
+                
+                // 3. 후보군 및 텍스트 데이터 존재 여부 확인
+                const textResult = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (!textResult) {
+                    throw new Error("AI로부터 분석 결과를 받지 못했습니다. (Empty Result)");
+                }
+
+                const res = JSON.parse(textResult);
+                const price = Math.floor(goldPriceGram * (weight * 3.75) * (res.factor || 0.5));
+                
                 setTimeout(() => {
                     document.getElementById('ad-modal').classList.remove('active');
-                    showResult(res, price, gramWeight);
-                }, 1500);
+                    showResult(res, price, weight);
+                }, 1000);
+
             } catch (e) {
                 document.getElementById('ad-modal').classList.remove('active');
-                showAlert("분석 중 오류 발생");
+                console.error("AI Error:", e);
+                
+                let detailedError = e.message;
+                if (e instanceof SyntaxError) detailedError = "데이터 형식 오류: AI가 유효한 JSON을 생성하지 못했습니다.";
+                
+                showError(detailedError);
             }
         }
 
@@ -497,7 +272,7 @@
                 <div class="text-center">
                     <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fas fa-gem text-yellow-600 text-2xl"></i></div>
                     <h2 class="text-2xl font-black mb-1">${res.karat} 감정 결과</h2>
-                    <p class="text-xs text-gray-400 mb-6">${weight.toFixed(2)}g 분석 완료</p>
+                    <p class="text-xs text-gray-400 mb-6">${weight}돈 분석 완료</p>
                     <div class="bg-gray-50 p-4 rounded-2xl mb-4 text-left">
                         <p class="text-[11px] font-bold text-gray-400 mb-1">AI 소견</p>
                         <p class="text-sm text-gray-600">${res.reason}</p>
@@ -510,69 +285,16 @@
             document.getElementById('result-modal').classList.add('active');
         }
 
-        /**
-         * 다시하기 기능 (초기화)
-         */
         function resetAI() {
-            // 1. 결과 모달 닫기
             document.getElementById('result-modal').classList.remove('active');
-            
-            // 2. 상단 시세 카드 표시 및 미리보기 이미지 영역 숨기기
-            document.getElementById('price-section').classList.remove('hidden');
             document.getElementById('image-display-area').classList.add('hidden');
-            
-            // 3. 메인 버튼 상태 복구 (색상, 텍스트, 아이콘)
             const actionBtn = document.getElementById('main-action-btn');
-            actionBtn.classList.remove('bg-blue-600');
-            actionBtn.classList.add('bg-gray-900');
+            actionBtn.classList.replace('bg-blue-600', 'bg-gray-900');
             actionBtn.innerHTML = `<i class="fas fa-camera"></i><span>사진 등록하기</span>`;
-            
-            // 4. 메인 버튼의 클릭 이벤트 리스너를 다시 파일 선택으로 변경
             actionBtn.onclick = () => document.getElementById('image-input').click();
-            
-            // 5. 입력 필드 및 내부 데이터 초기화
             document.getElementById('image-input').value = "";
-            document.getElementById('main-preview-img').src = "";
             fullImageBase64 = null;
         }
-
-        function switchView(view) {
-            ['ai', 'calc', 'alarm'].forEach(v => {
-                document.getElementById(`${v}-view`).classList.add('hidden');
-                document.getElementById(`nav-${v}`).classList.remove('active');
-            });
-            document.getElementById(`${view}-view`).classList.remove('hidden');
-            document.getElementById(`nav-${view}`).classList.add('active');
-        }
-
-        function runCalculation() {
-            const w24 = parseFloat(document.getElementById('calc-w-24').value) || 0;
-            const w18 = parseFloat(document.getElementById('calc-w-18').value) || 0;
-            const w14 = parseFloat(document.getElementById('calc-w-14').value) || 0;
-            const mult = calcCurrentUnit === 'don' ? 3.75 : 1;
-            const total = Math.floor(((w24 * mult) * goldPriceGram * 0.98) + ((w18 * mult) * goldPriceGram * 0.75 * 0.95) + ((w14 * mult) * goldPriceGram * 0.585 * 0.95));
-            showAlert(`예상 정산 금액은 약 ${total.toLocaleString()}원 입니다.`, "정산 결과");
-        }
-
-        function saveAlarm() {
-            const ampm = document.getElementById('alarm-ampm').value;
-            const hour = parseInt(document.getElementById('alarm-hour').value);
-            const min = parseInt(document.getElementById('alarm-minute').value);
-            let h24 = (ampm === 'PM' && hour !== 12) ? hour + 12 : (ampm === 'AM' && hour === 12 ? 0 : hour);
-            savedAlarm = { hour: h24, minute: min, label: `${ampm} ${hour}:${min < 10 ? '0'+min : min}` };
-            document.getElementById('alarm-status').classList.remove('hidden');
-            document.getElementById('alarm-status').textContent = `🔔 ${savedAlarm.label} 시세 알람 예약 완료`;
-            showAlert(`${savedAlarm.label}에 시세 확인 알람이 설정되었습니다.`, "알람 설정 완료");
-        }
-
-        window.onload = () => {
-            fetchPrice();
-            updateCurrentLocation();
-            const hs = document.getElementById('alarm-hour');
-            const ms = document.getElementById('alarm-minute');
-            for(let i=1; i<=12; i++) hs.add(new Option(i+'시', i));
-            for(let i=0; i<60; i+=5) ms.add(new Option((i<10?'0'+i:i)+'분', i));
-        };
     </script>
 </body>
 </html>
