@@ -1,9 +1,9 @@
 {
-    "last_updated": "2026-03-04 08:30:48",
+    "last_updated": "2026-03-04 09:33:10",
     "prices": {
         "korea": "추출 실패(Selector)",
         "standard": "추출 실패(Selector)",
-        "jaeil": "추출 실패",
+        "jaeil": "접속 실패",
         "jongro": "추출 실패(Selector)"
     }
 }
